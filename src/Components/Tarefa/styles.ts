@@ -1,4 +1,25 @@
 import styled from 'styled-components'
+import variaveis from '../../styles/variaveis'
+
+type TagProps = {
+  prioridade?: string
+  status?: string
+}
+type BotaoProps = {
+  tipo?: 'salvar' | 'cancelar'
+}
+
+function retornaCorDeFundo({ prioridade, status }: TagProps): string {
+  console.log({ prioridade, status })
+  if (status) {
+    if (status === 'Pendente') return variaveis.amarelo
+    if (status === 'Completa') return variaveis.verde
+  } else if (prioridade) {
+    if (prioridade === 'Urgente') return variaveis.vermelho
+    if (prioridade === 'Importante') return variaveis.amarelo2
+  }
+  return '#ccc'
+}
 
 export const Card = styled.div`
   background-color: #fcfcfc;
@@ -12,12 +33,12 @@ export const Titulo = styled.h3`
   font-size: 18px;
   margin-bottom: 16px;
 `
-export const Tag = styled.span`
+export const Tag = styled.span<TagProps>`
   padding: 4px 8px;
   font-size: 10px;
   font-weight: bold;
   color: #fff;
-  background-color: #e1a32a;
+  background-color: ${retornaCorDeFundo};
   border-radius: 8px;
   margin-right: 16px;
   display: inline-block;
@@ -39,14 +60,25 @@ export const BarraAcoes = styled.div`
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   padding-top: 16px;
 `
-export const Botao = styled.button`
+export const Botao = styled.button<BotaoProps>`
   font-size: 12px;
   font-weight: bold;
   color: #fff;
   padding: 6px 12px;
   border: none;
   cursor: pointer;
-  background-color: #2f3640;
+  background-color: ${(props) =>
+    props.tipo === 'salvar'
+      ? variaveis.verde
+      : props.tipo === 'cancelar'
+      ? variaveis.vermelho
+      : '#2f3640'};
   border-radius: 8px;
   margin-right: 8px;
+`
+export const BotaoSalvar = styled(Botao)`
+  background-color: ${variaveis.verde};
+`
+export const BotaoCancelarRemover = styled(Botao)`
+  background-color: ${variaveis.vermelho};
 `
