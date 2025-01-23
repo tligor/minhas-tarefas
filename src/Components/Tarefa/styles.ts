@@ -1,22 +1,28 @@
 import styled from 'styled-components'
 import variaveis from '../../styles/variaveis'
 
+import * as enums from '../../utils/enums/tarefa'
+
 type TagProps = {
-  prioridade?: string
-  status?: string
+  prioridade?: enums.Prioridade
+  status?: enums.Status
+  parametro: 'status' | 'prioridade'
 }
 type BotaoProps = {
   tipo?: 'salvar' | 'cancelar'
 }
 
-function retornaCorDeFundo({ prioridade, status }: TagProps): string {
-  console.log({ prioridade, status })
-  if (status) {
-    if (status === 'Pendente') return variaveis.amarelo
-    if (status === 'Completa') return variaveis.verde
-  } else if (prioridade) {
-    if (prioridade === 'Urgente') return variaveis.vermelho
-    if (prioridade === 'Importante') return variaveis.amarelo2
+function retornaCorDeFundo({
+  prioridade,
+  status,
+  parametro
+}: TagProps): string {
+  if (parametro === 'prioridade') {
+    if (prioridade === enums.Prioridade.URGENTE) return variaveis.vermelho
+    if (prioridade === enums.Prioridade.IMPORTANTE) return variaveis.amarelo2
+  } else {
+    if (status === enums.Status.PENDENTE) return variaveis.amarelo
+    if (status === enums.Status.COMPLETA) return variaveis.verde
   }
   return '#ccc'
 }
