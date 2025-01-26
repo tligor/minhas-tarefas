@@ -1,4 +1,4 @@
-[(https://github.com/tligor/minhas-tarefas/blob/Projeto-Todo/Projeto-Todo.png)]
+![image](https://github.com/tligor/minhas-tarefas/blob/Projeto-Todo/Projeto-Todo.png)
 
 # Getting Started with Create React App
 
