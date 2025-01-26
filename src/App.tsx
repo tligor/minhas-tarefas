@@ -2,7 +2,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import GlobalStyle, { Container } from './styles'
 import store from './store'
 import { Provider } from 'react-redux'
-import Home from './pages/home'
+import Home from './pages/Home'
+import Cadastro from './pages/Cadastro'
 
 const rotas = createBrowserRouter([
   {
@@ -11,7 +12,7 @@ const rotas = createBrowserRouter([
   },
   {
     path: '/novo',
-    element: <h1>Página de Novo</h1>
+    element: <Cadastro />
   }
 ])
 function App() {
