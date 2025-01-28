@@ -18,7 +18,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prettier-watch": "prettier --write 'src/*.{js,jsx,ts,tsx,json,css,scss,html}'",
+    "prettier-watch": "chokidar 'src/**/*.{js,jsx,ts,tsx,json,css,scss,html}' -c 'prettier --write .'",
     "eslint-watch": "eslint --watch 'src/**/*.{js,jsx,ts,tsx}'"
   },
   "eslintConfig": {
@@ -41,6 +41,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "chokidar-cli": "^3.0.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
     "prettier": "^3.4.2"
