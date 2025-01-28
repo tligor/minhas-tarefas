@@ -1,0 +1,9 @@
+{
+  "extends": [
+    "react-app", // Configuração padrão do ESLint para Create React App
+    "plugin:prettier/recommended" // Adiciona Prettier como uma extensão
+  ],
+  "rules": {
+    "prettier/prettier": "error" // Define o Prettier como regra do ESLint e mostra erros
+  }
+}

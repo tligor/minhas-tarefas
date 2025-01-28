@@ -1,9 +1,24 @@
-root=true
+# EditorConfig é um arquivo de configuração para garantir a consistência de estilo de codificação.
+# Para mais informações, consulte https://editorconfig.org
 
-[*]
+# Top-level .editorconfig file
+root = true
 
-end_of_line = lf
-insert_final_newline = true
-charset = utf-8
-indent_size = 2
+# Arquivos de código fonte em JavaScript/React
+[*.js]
 indent_style = space
+indent_size = 2
+charset = utf-8
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+# Arquivos de código fonte em arquivos .json
+[*.json]
+indent_style = space
+indent_size = 2
+
+# Arquivos de estilo CSS/SCSS
+[*.{css,scss}]
+indent_style = space
+indent_size = 2

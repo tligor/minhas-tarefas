@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components'
 
 export const Container = styled.div`
   padding: 20px;
@@ -14,4 +14,8 @@ export const Formulario = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+
+  input {
+    margin-bottom: 1rem;
+  }
 `
