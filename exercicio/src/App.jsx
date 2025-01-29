@@ -1,158 +1,199 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import 'bootstrap/dist/css/bootstrap.min.css'
 import { v4 as uuid } from 'uuid'
-import Contato from './Components/Contato' // Importando o componente Contato
 import * as S from './styles.ts'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {
+  faCirclePlus,
+  faList,
+  faTrash,
+} from '@fortawesome/free-solid-svg-icons'
+import Contato from './Components/Contato'
+import {
+  adicionarContato,
+  removerContato,
+  editarContato,
+  selecionarContato,
+  carregarContatos,
+} from './store/slices/contatoSlice.js'
 
-// Função principal do componente App
 export default function App() {
-  const [contato, setContato] = useState({
+  const dispatch = useDispatch()
+  const listaContatos = useSelector((state) => state.contatos.listaContatos)
+  const selecionados = useSelector((state) => state.contatos.selecionados)
+
+  const [contato, setContato] = React.useState({
     nome: '',
     telefone: '',
+    email: '',
   })
 
-  const [listaContatos, setListaContatos] = useState([])
-  const [selecionados, setSelecionados] = useState({}) // Estado para seleção dos contatos
+  const [contatoEditando, setContatoEditando] = React.useState(null)
 
   const inputNome = useRef()
   const inputTelefone = useRef()
+  const inputEmail = useRef()
 
-  // Função para definir o nome
   function setNome(e) {
     setContato({ ...contato, nome: e.target.value })
   }
 
-  // Função para definir o telefone
   function setTelefone(e) {
     setContato({ ...contato, telefone: e.target.value })
   }
 
-  // Função que adiciona um novo contato
+  function setEmail(e) {
+    setContato({ ...contato, email: e.target.value })
+  }
+
+  // Adicionar um novo contato
   function addContato() {
-    if (contato.nome === '' || contato.telefone === '') return
-
-    // Verifica se o contato já existe
-    const contatoDuplicado = listaContatos.find(
-      (ct) => ct.nome === contato.nome && ct.telefone === contato.telefone,
-    )
-    if (contatoDuplicado) {
-      inputTelefone.current.focus()
+    if (contato.nome === '' || contato.telefone === '' || contato.email === '')
       return
-    }
 
-    // Cria um novo contato com id único
     const novoContato = { ...contato, id: uuid() }
+    dispatch(adicionarContato(novoContato))
 
-    // Atualiza a lista de contatos
-    setListaContatos([...listaContatos, novoContato])
-    setContato({ nome: '', telefone: '' }) // Limpa os campos após a adição
-
+    setContato({ nome: '', telefone: '', email: '' })
     inputNome.current.focus()
   }
 
-  // Função que alterna a seleção de um contato
-  function toggleSelecionado(id) {
-    setSelecionados((prev) => ({
-      ...prev,
-      [id]: !prev[id], // Inverte o valor do checkbox
-    }))
-  }
-
-  // Função para apagar os contatos selecionados
-  function apagarSelecionados() {
-    const contatosFiltrados = listaContatos.filter(
-      (ct) => !selecionados[ct.id], // Mantém apenas os contatos não selecionados
+  // Editar os contatos selecionados
+  function editarContatosSelecionados() {
+    const contatosSelecionados = listaContatos.filter(
+      (contato) => selecionados[contato.id],
     )
-    setListaContatos(contatosFiltrados)
-    setSelecionados({}) // Limpa a seleção
+
+    // Se houver apenas um contato selecionado, preenche os campos de entrada para edição
+    if (contatosSelecionados.length === 1) {
+      const contatoSelecionado = contatosSelecionados[0]
+      setContato({
+        nome: contatoSelecionado.nome,
+        telefone: contatoSelecionado.telefone,
+        email: contatoSelecionado.email,
+      })
+      setContatoEditando(contatoSelecionado.id)
+    }
   }
 
-  // Função para remover um contato específico
-  function removerContato(id) {
-    setListaContatos(listaContatos.filter((contato) => contato.id !== id))
+  // Salvar a edição do contato
+  function salvarContatoEditado() {
+    if (contatoEditando) {
+      dispatch(editarContato({ ...contato, id: contatoEditando }))
+      setContatoEditando(null)
+      setContato({ nome: '', telefone: '', email: '' })
+    }
   }
 
-  // Função para adicionar contato com os Enters
-  function enterAdicionarContato(e) {
-    if (e.code === 'Enter' || e.code === 'NumpadEnter') addContato()
+  function toggleSelecionado(id) {
+    dispatch(selecionarContato({ id }))
   }
 
-  // Carregar contatos do localStorage ao inicializar o componente
+  function removerContatoHandler(id) {
+    dispatch(removerContato(id))
+  }
+
   useEffect(() => {
     const contatosSalvos = localStorage.getItem('meus_contatos')
     if (contatosSalvos) {
-      setListaContatos(JSON.parse(contatosSalvos))
+      dispatch(carregarContatos(JSON.parse(contatosSalvos)))
     }
-  }, [])
+  }, [dispatch])
 
-  // Salvar contatos no localStorage sempre que a lista for alterada
   useEffect(() => {
     localStorage.setItem('meus_contatos', JSON.stringify(listaContatos))
   }, [listaContatos])
 
   return (
-    <>
+    <S.Main>
       <S.Container className="container-fluid">
         <div className="row">
-          <div className="col text-center">
-            <h4 className="text-center">Lista de Contatos</h4>
+          <div className="col">
+            <h4 className="text-center">
+              <FontAwesomeIcon icon={faList} />
+              Lista de Contatos
+            </h4>
           </div>
         </div>
       </S.Container>
 
       <S.Formulario className="container-fluid">
-        <div className="row">
+        <div className="row col-sm-6 col-md-6 col-lg-4 col-xxl-3">
           <div className="col">
-            <div className="row">
-              <div className="col-6">
-                <div>
-                  <label className="form-label">Nome</label>
-                  <input
-                    className="form-control"
-                    ref={inputNome}
-                    onChange={setNome}
-                    type="text"
-                    value={contato.nome}
-                  />
-                </div>
-                <div>
-                  <label className="form-label">Telefone</label>
-                  <input
-                    className="form-control"
-                    ref={inputTelefone}
-                    onChange={setTelefone}
-                    type="text"
-                    value={contato.telefone}
-                    onKeyUp={enterAdicionarContato}
-                  />
-                </div>
+            <div className="row justify-content-center">
+              <div>
+                <label className="form-label">Nome</label>
+                <input
+                  className="form-control"
+                  ref={inputNome}
+                  onChange={setNome}
+                  type="text"
+                  value={contato.nome}
+                />
               </div>
               <div>
-                <button type="submit" onClick={addContato}>
-                  Adicionar Contato
-                </button>
-                <button onClick={apagarSelecionados}>
-                  Apagar Contato(s) selecionado
-                </button>
+                <label className="form-label">Telefone</label>
+                <input
+                  className="form-control"
+                  ref={inputTelefone}
+                  onChange={setTelefone}
+                  type="text"
+                  value={contato.telefone}
+                />
               </div>
+              <div>
+                <label className="form-label">E-mail</label>
+                <input
+                  className="form-control"
+                  ref={inputEmail}
+                  onChange={setEmail}
+                  type="email"
+                  value={contato.email}
+                />
+              </div>
+              <S.campoAcoes>
+                <div>
+                  <button
+                    className="btn btn-outline-warning"
+                    onClick={editarContatosSelecionados}
+                  >
+                    <FontAwesomeIcon className="me-2" icon={faTrash} />
+                    Editar selecionado(s)
+                  </button>
+                </div>
+                <div>
+                  <button
+                    className="btn btn-outline-success"
+                    onClick={
+                      contatoEditando ? salvarContatoEditado : addContato
+                    }
+                  >
+                    <FontAwesomeIcon className="me-2" icon={faCirclePlus} />
+                    {contatoEditando ? 'Salvar' : 'Adicionar'}
+                  </button>
+                </div>
+              </S.campoAcoes>
             </div>
           </div>
         </div>
       </S.Formulario>
 
-      <ul>
+      <S.ListaDeContatos>
         {listaContatos.map((ct) => (
           <li key={ct.id}>
             <Contato
               id={ct.id}
               nome={ct.nome}
               telefone={ct.telefone}
-              remover={removerContato}
+              email={ct.email}
+              remover={removerContatoHandler}
               toggleSelecionado={toggleSelecionado}
               selecionado={selecionados[ct.id] || false}
             />
           </li>
         ))}
-      </ul>
-    </>
+      </S.ListaDeContatos>
+    </S.Main>
   )
 }
